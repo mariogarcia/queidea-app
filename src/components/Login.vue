@@ -39,7 +39,7 @@ export default class Login extends Vue {
         border: 1px solid var(--border-gray);
         font-size: 1em;          
         height: 2em;
-        padding: .2em;        
+        padding: .2em .5em;
     }
     button {
         background: var(--background-yellow);

@@ -1,7 +1,7 @@
 <template>
   <div id="app">
     <img class="logo" alt="Vue logo" src="./assets/idea.png">
-    <Login />
+    <LinkView />
   </div>
 </template>
 
@@ -9,10 +9,11 @@
 import { Component, Vue } from 'vue-property-decorator';
 import HelloWorld from './components/HelloWorld.vue';
 import Login from './components/Login.vue';
+import LinkView from './links/list/View.vue';
 
 @Component({
   components: {
-    Login,
+    LinkView
   },
 })
 export default class App extends Vue {}
