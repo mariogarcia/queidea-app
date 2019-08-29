@@ -1,13 +1,16 @@
 <template>
-    <form>
-        <label for="username">Username</label>
-        <input type="text" name="username" />
+    <div class="login">
+        <img class="logo" alt="Vue logo" src="../assets/idea.png">        
+        <form>
+            <label for="username">Username</label>
+            <input type="text" name="username" />
 
-        <label for="password">Password</label>
-        <input type="password" name="password" />
+            <label for="password">Password</label>
+            <input type="password" name="password" />
 
-        <button type="submit" value="Login">Login</button>
-    </form>
+            <button type="submit" value="Login">Login</button>
+        </form>
+    </div>
 </template>
 
 <script lang="ts">
@@ -24,6 +27,16 @@ export default class LoginView extends Vue {
         --border-black: black;
         --background-yellow: #f6b64f;
     }
+
+    .login {
+        height: 100vh;
+    }
+
+    img {
+        display: block;
+        margin: auto;
+    }
+    
     form {        
         display: flex;
         flex-direction: column;
