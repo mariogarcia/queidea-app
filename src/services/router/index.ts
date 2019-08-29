@@ -1,7 +1,7 @@
 import Vue from 'vue';
 import Router from 'vue-router';
-import LoginView from '@/login/LoginView.vue';
-import LinkListView from '@/links/list/LinkListView.vue';
+import LoginView from '@/domain/login/LoginView.vue';
+import LinkListView from '@/domain/links/list/LinkListView.vue';
 import MainLayout from '@/components/layout/MainLayout.vue';
 
 Vue.use(Router);

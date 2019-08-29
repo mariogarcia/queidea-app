@@ -1,6 +1,6 @@
 <template>
     <div class="login">
-        <img class="logo" alt="Vue logo" src="../assets/idea.png">        
+        <img class="logo" alt="Vue logo" src="../../assets/idea.png">        
         <form>
             <label for="username">Username</label>
             <input type="text" name="username" />
