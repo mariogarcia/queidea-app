@@ -5,6 +5,7 @@ import LinkListView from '@/domain/links/list/LinkListView.vue';
 import MainLayout from '@/components/layout/MainLayout.vue';
 import store from '@/services/store';
 import security from '@/services/security'
+import keycloak from '@/services/security';
 
 Vue.use(Router);
 
@@ -52,28 +53,28 @@ router.beforeEach(async (to, from, next) => {
     const requiresAuth: Boolean = to.matched.some((record) => record.meta.requiresAuth)
 
     if (requiresAuth) {
-        if (!security.authenticated) {
-            security
-                .login()
-                .success(() => storeCredentials())
-                .error(() => notifyError());
+        const credentials = store.local.get('credentials')
+
+        if (!credentials) {
+            await security
+                .init({onLoad: 'login-required'})
+                .success((auth) => {
+                    if (!auth) {
+                        // eslint-disable-next-line no-console
+                        console.log('success pero no autenticado');
+                    } else {
+                        // eslint-disable-next-line no-console
+                        console.log('success!!');
+                    }
+                }).error((error) => {
+                    // eslint-disable-next-line no-console
+                    console.log('error en la autenticacion');
+                });
         }
     }
-
+    // eslint-disable-next-line no-console
+    console.log('keycloack', keycloak);
     return next();
 });
-
-const storeCredentials = (): void => {
-    const data = {
-        token: security.token,
-        userInfo: security.userInfo,
-    };
-
-    store.local.set('credentials', data);
-}
-
-const notifyError = (): void => {
-    // console.log("");
-}
 
 export default router;
