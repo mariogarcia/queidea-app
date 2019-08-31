@@ -3,6 +3,8 @@ import Router from 'vue-router';
 import LoginView from '@/domain/login/LoginView.vue';
 import LinkListView from '@/domain/links/list/LinkListView.vue';
 import MainLayout from '@/components/layout/MainLayout.vue';
+import store from '@/services/store';
+import security from '@/services/security'
 
 Vue.use(Router);
 
@@ -50,16 +52,28 @@ router.beforeEach(async (to, from, next) => {
     const requiresAuth: Boolean = to.matched.some((record) => record.meta.requiresAuth)
 
     if (requiresAuth) {
-        const isLogged = false // replace with call to local storage
-        if (!isLogged) {
-            return next({
-                name: "login",
-                query: { next: window.location.pathname }
-            });
+        if (!security.authenticated) {
+            security
+                .login()
+                .success(() => storeCredentials())
+                .error(() => notifyError());
         }
     }
 
     return next();
 });
+
+const storeCredentials = (): void => {
+    const data = {
+        token: security.token,
+        userInfo: security.userInfo,
+    };
+
+    store.local.set('credentials', data);
+}
+
+const notifyError = (): void => {
+    // console.log("");
+}
 
 export default router;
