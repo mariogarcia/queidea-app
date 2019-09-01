@@ -9,7 +9,7 @@ export interface Link {
     description: String
 }
 
-export const toPagedResult = <T>(json: any): PagedResult<T> => {
+export const toPagedResult = <T>(json: any): PagedResult<T> => {    
     const result = json.data.result
 
     return {

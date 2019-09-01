@@ -4,8 +4,9 @@ import LoginView from '@/domain/login/LoginView.vue';
 import LinkListView from '@/domain/links/list/LinkListView.vue';
 import MainLayout from '@/components/layout/MainLayout.vue';
 import store from '@/services/store';
-import security from '@/services/security'
 import keycloak from '@/services/security';
+import { KeycloakError } from 'keycloak-js';
+import log from '@/services/logging';
 
 Vue.use(Router);
 
@@ -28,7 +29,6 @@ const router = new Router({
         },
         {
             path: "/links",
-            name: "links:list",
             component: MainLayout,
             meta: {
                 requiresAuth: true,
@@ -36,6 +36,7 @@ const router = new Router({
             children: [ 
                 {
                     path: "",
+                    name: "links:list",
                     component: LinkListView
                 }
             ]
@@ -50,31 +51,35 @@ const router = new Router({
  * to the login view
  */
 router.beforeEach(async (to, from, next) => {
+    log.debug("[AUTH] checking requiresAuth:", to.name);
     const requiresAuth: Boolean = to.matched.some((record) => record.meta.requiresAuth)
 
     if (requiresAuth) {
-        const credentials = store.local.get('credentials')
-
-        if (!credentials) {
-            await security
-                .init({onLoad: 'login-required'})
-                .success((auth) => {
-                    if (!auth) {
-                        // eslint-disable-next-line no-console
-                        console.log('success pero no autenticado');
-                    } else {
-                        // eslint-disable-next-line no-console
-                        console.log('success!!');
-                    }
-                }).error((error) => {
-                    // eslint-disable-next-line no-console
-                    console.log('error en la autenticacion');
-                });
-        }
+        await keycloak
+            .init({onLoad: 'login-required'})
+            .success(storeCredentials)
+            .error(logError);
     }
-    // eslint-disable-next-line no-console
-    console.log('keycloack', keycloak);
+
     return next();
 });
+
+const storeCredentials = (auth: boolean): void => {
+    if (auth) {
+        const credentials = {
+            token: keycloak.token
+        };        
+        log.debug('[AUTH] user successfully authenticated');
+        store.local.set('credentials', credentials);
+    } else {
+        log.debug('[AUTH] not authenticated - clearing credentials');
+        store.local.clear();
+    }
+}
+
+const logError = (error: KeycloakError): void => {
+    log.error("[AUTH] error while authenticating: ", error);
+}
+
 
 export default router;
