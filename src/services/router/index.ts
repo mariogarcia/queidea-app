@@ -1,12 +1,12 @@
+import log from '@/services/logging';
+import store from '@/services/store';
+import keycloak from '@/services/security';
 import Vue from 'vue';
 import Router from 'vue-router';
 import LoginView from '@/domain/login/LoginView.vue';
 import LinkListView from '@/domain/links/list/LinkListView.vue';
 import MainLayout from '@/components/layout/MainLayout.vue';
-import store from '@/services/store';
-import keycloak from '@/services/security';
 import { KeycloakError } from 'keycloak-js';
-import log from '@/services/logging';
 
 Vue.use(Router);
 
@@ -64,6 +64,12 @@ router.beforeEach(async (to, from, next) => {
     return next();
 });
 
+/**
+ * Stores credential's information received from Keycloak when
+ * successful authentication
+ * 
+ * @param auth whether the user's been authenticated or not
+ */
 const storeCredentials = (auth: boolean): void => {
     if (auth) {
         const credentials = {
@@ -77,6 +83,11 @@ const storeCredentials = (auth: boolean): void => {
     }
 }
 
+/**
+ * Logs error produces in a failing attempt of authentication
+ * 
+ * @param error error received from failure authentication
+ */
 const logError = (error: KeycloakError): void => {
     log.error("[AUTH] error while authenticating: ", error);
 }
