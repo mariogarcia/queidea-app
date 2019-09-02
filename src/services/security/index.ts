@@ -6,8 +6,8 @@ import Keycloack from 'keycloak-js';
  */
 const keycloackOpts = {
     url: 'http://localhost:8080/auth', 
-    realm: 'vue-example', 
-    clientId: 'vue-test-app'
+    realm: 'queidea', 
+    clientId: 'web-app'
 }
 
 /**
