@@ -1,4 +1,5 @@
 import log from '@/services/logging';
+import store from '@/services/store';
 import keycloak from '@/services/security';
 import axios, { AxiosInstance, AxiosResponse, AxiosRequestConfig } from "axios";
 import { Observable, Observer } from "rxjs";
@@ -34,7 +35,9 @@ client.defaults.headers.Accept = "application/json";
 
 const setAuthorizationHeader = (keycloak: KeycloakInstance): (config: AxiosRequestConfig) => AxiosRequestConfig => {
     return (config: AxiosRequestConfig): AxiosRequestConfig => {
-        config.headers.authorization = `JWT ${keycloak.token}`
+        const credentials: any = store.local.get('credentials');
+        config.headers.authorization = `JWT ${credentials.token}`;
+
         return config
     }
 }
