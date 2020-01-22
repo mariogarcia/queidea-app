@@ -55,7 +55,7 @@ router.beforeEach(async (to, from, next) => {
     const requiresAuth: Boolean = to.matched.some((record) => record.meta.requiresAuth)
 
     if (requiresAuth) {
-        await keycloak
+        keycloak
             .init({onLoad: 'login-required'})
             .success(storeCredentials)
             .error(logError);
@@ -66,8 +66,7 @@ router.beforeEach(async (to, from, next) => {
 
 /**
  * Stores credential's information received from Keycloak when
- * successful authentication
- * 
+ * successful 
  * @param auth whether the user's been authenticated or not
  */
 const storeCredentials = (auth: boolean): void => {
