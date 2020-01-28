@@ -1,9 +1,6 @@
-import log from '@/services/logging';
 import store from '@/services/store';
-import keycloak from '@/services/security';
 import axios, { AxiosInstance, AxiosResponse, AxiosRequestConfig } from "axios";
 import { Observable, Observer } from "rxjs";
-import { KeycloakInstance } from 'keycloak-js';
 
 export const client: AxiosInstance = axios.create({
   // baseURL: process.env.VUE_APP_API_URL,
@@ -33,16 +30,14 @@ export const fromPromise = <T>(promise: Promise<T>): Observable<T> => {
 client.defaults.headers["Content-Type"] = "application/json";
 client.defaults.headers.Accept = "application/json";
 
-const setAuthorizationHeader = (keycloak: KeycloakInstance): (config: AxiosRequestConfig) => AxiosRequestConfig => {
-    return (config: AxiosRequestConfig): AxiosRequestConfig => {
-        const credentials: any = store.local.get('credentials');
-        config.headers.authorization = `JWT ${credentials.token}`;
+const setAuthorizationHeader = (config: AxiosRequestConfig): AxiosRequestConfig => {    
+    const credentials: any = store.local.get('credentials');
+    config.headers.authorization = `JWT ${credentials.token}`;
 
-        return config
-    }
+    return config    
 }
 
 client.interceptors.request.use(
-    setAuthorizationHeader(keycloak),
+    setAuthorizationHeader,
     (error) => Promise.reject(error)
 )

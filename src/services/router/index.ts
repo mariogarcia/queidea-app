@@ -1,12 +1,10 @@
 import log from '@/services/logging';
-import store from '@/services/store';
-import keycloak from '@/services/security';
+import authService from '@/services/security';
 import Vue from 'vue';
 import Router from 'vue-router';
 import LoginView from '@/domain/login/LoginView.vue';
 import LinkListView from '@/domain/links/list/LinkListView.vue';
 import MainLayout from '@/components/layout/MainLayout.vue';
-import { KeycloakError } from 'keycloak-js';
 
 Vue.use(Router);
 
@@ -55,39 +53,22 @@ router.beforeEach(async (to, from, next) => {
     const requiresAuth: Boolean = to.matched.some((record) => record.meta.requiresAuth)
 
     if (requiresAuth) {
-        keycloak
-            .init({onLoad: 'login-required'})
-            .success(storeCredentials)
-            .error(logError);
+        const user = await authService.getUser()
+        
+        if (user == null){
+            await authService.signinRedirect().catch(logError);
+        }   
     }
 
     return next();
 });
 
 /**
- * Stores credential's information received from Keycloak when
- * successful 
- * @param auth whether the user's been authenticated or not
- */
-const storeCredentials = (auth: boolean): void => {
-    if (auth) {
-        const credentials = {
-            token: keycloak.token
-        };        
-        log.debug('[AUTH] user successfully authenticated');
-        store.local.set('credentials', credentials);
-    } else {
-        log.debug('[AUTH] not authenticated - clearing credentials');
-        store.local.clear();
-    }
-}
-
-/**
  * Logs error produces in a failing attempt of authentication
  * 
  * @param error error received from failure authentication
  */
-const logError = (error: KeycloakError): void => {
+const logError = (error: any): void => {
     log.error("[AUTH] error while authenticating: ", error);
 }
 
